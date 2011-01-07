@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from app.main.models import Category, Test, TestPass, AnswerChoice, AnswerResult
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from forms import AnswerTestForm
+from forms import AnswerTestForm, StartTest
 from django.http import HttpResponse
 from django.views.generic.list_detail import object_list 
 
@@ -47,9 +47,17 @@ def start(request, pk):
     if request.current_test:
         return {}
     obj = get_object_or_404(Test, pk=pk)
-    test_pass = TestPass(user=request.user, test=obj)
-    test_pass.save()
-    return redirect(test_pass.get_absolute_url())
+    
+    form = StartTest(request.POST or None)
+    if form.is_valid():
+        test_pass = form.save(False)
+        test_pass.user = request.user
+        test_pass.test = obj
+        test_pass.save()
+        return redirect(test_pass.get_absolute_url())
+    return {
+        'form': form
+    }
 
 @login_required
 @render_to('main/run.html')
@@ -58,7 +66,7 @@ def run(request):
         return redirect('/')   
     if request.current_test.is_end():
         return redirect('main:end')
-    form = AnswerTestForm(request.current_test.first_question)
+    form = AnswerTestForm(request.current_test.first_question, request.current_test)
     return {
         'form': form
     }
@@ -67,10 +75,11 @@ def run(request):
 @render_to('main/answer.html')
 def answer(request):
     if not request.current_test:
-         return redirect('/') 
+        return redirect('/') 
     if request.current_test.is_end():
         return HttpResponse('END')
-    form = AnswerTestForm(request.current_test.first_question, request.POST)
+    form = AnswerTestForm(request.current_test.first_question, request.current_test, request.POST)
+    prev_answer = None
     if form.is_valid():
         answers = form.get_answer()
         ac = AnswerChoice(question=request.current_test.first_question, test_pass=request.current_test)
@@ -79,9 +88,12 @@ def answer(request):
             AnswerResult(question=ac, answer=item).save()
         if not request.current_test.first_question:
             return HttpResponse('END')
-        form = AnswerTestForm(request.current_test.first_question)        
+        if request.current_test.is_simple():
+            prev_answer = ac
+        form = AnswerTestForm(request.current_test.first_question, request.current_test)        
     return {
-        'form': form
+        'form': form,
+        'prev_answer': prev_answer
     }
 
 @login_required

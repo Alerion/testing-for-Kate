@@ -7,6 +7,12 @@ import os
 from lib.docx import opendocx, nsprefixes
 from lxml import etree
 
+class StartTest(forms.ModelForm):
+    
+    class Meta:
+        model = TestPass
+        fields = ('mode', 'random_answer_choices')
+
 class TestAdminForm(forms.ModelForm):
     file = forms.FileField(required=False)
     
@@ -64,15 +70,19 @@ class TestAdminForm(forms.ModelForm):
 class AnswerTestForm(forms.Form):
     answer = forms.ModelMultipleChoiceField(queryset=Question.objects.all(), label='')
     
-    def __init__(self, question, *args, **kwargs):
+    def __init__(self, question, test_pass, *args, **kwargs):
         self.question = question
-        
+        self.test_pass = test_pass
         #if question.multi_answer():
         #    self.base_fields['answer'] = forms.ModelMultipleChoiceField(queryset=question.answer_set.order_by('?'))
         #else:
         #    self.base_fields['answer'] = forms.ModelChoiceField(queryset=question.answer_set.order_by('?'), empty_label=None, label='')
         
-        self.base_fields['answer'].queryset = question.answer_set.all()
+        if test_pass.random_answer_choices:
+            self.base_fields['answer'].queryset = question.answer_set.order_by('?')
+        else:
+            self.base_fields['answer'].queryset = question.answer_set.all()
+        
         super(AnswerTestForm, self).__init__(*args, **kwargs)
         
         self.fields['answer'].widget = forms.CheckboxSelectMultiple(choices=self.fields['answer'].widget.choices)
@@ -80,7 +90,16 @@ class AnswerTestForm(forms.Form):
         #    self.fields['answer'].widget = forms.CheckboxSelectMultiple(choices=self.fields['answer'].widget.choices)
         #else:
         #    self.fields['answer'].widget = forms.RadioSelect(choices=self.fields['answer'].widget.choices)
+    
+    def clean(self):
+        data = self.cleaned_data
+
+        if self.test_pass.is_strict() and 'answer' in self.cleaned_data and \
+            not self.question.check_answers(self.get_answer()):
+            raise forms.ValidationError(u'Не верный ответ, попробуйте снова.')
         
+        return data
+    
     def get_answer(self):
         a = self.cleaned_data['answer']
         if not is_iterable(a):

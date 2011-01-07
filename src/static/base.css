@@ -387,4 +387,20 @@ table.result * {
 #question-div ul li {
     list-style: none outside none;
 }
+
+.prev-answer {
+    font-size: 0.8em;
+    border: dotted 1px #c0c0c0;
+    padding: 3px;
+}
+
+.prev-answer .question {
+    font-size: 0.95em;
+}
+
+.missed-correct {
+    margin: 5px;
+    font-size: 0.95em;
+    background-color: #e5e5e5;
+}
 /*** End of file ***/

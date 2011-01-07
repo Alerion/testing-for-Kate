@@ -13,11 +13,14 @@
 		{% include 'main/answer.html' %}
 	</div>
 	<input type='submit' value='Ответить' id='answer-button'>
+    <a href="{% url main:end %}">Закончить</a>
 	<script type='text/javascript'>
 		$('#answer-button').click(function(){
 			var data = $('#question-form').serialize();
 			if (data){
+                $(this).val('Отправка...')
 				$.post('{% url main:answer %}', data, function(response){
+                    $('#answer-button').val('Ответить');
 					if (response == 'END'){
 						document.location = '{% url main:end %}';
 					}else{

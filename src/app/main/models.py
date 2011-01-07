@@ -87,6 +87,16 @@ class Question(models.Model):
     def correct_count(self):
         return self.answer_set.filter(correct=True).count()
     
+    def check_answers(self, answers):
+        correct = 0
+        incorrect = 0
+        for item in answers:
+            if item.correct:
+                correct += 1
+            else:
+                incorrect += 1
+        return correct >= self.correct_count() and not incorrect
+    
 class Answer(models.Model):
     question = models.ForeignKey(Question, verbose_name=u'вопрос')
     answer = models.CharField(u'ответ', max_length=500)
@@ -101,15 +111,30 @@ class Answer(models.Model):
         return self.answer
     
 class TestPass(models.Model):
+    SIMPLE = 1
+    STRICT = 2
+    MODE_CHOICES = (
+        (SIMPLE, u'Обычный'),
+        (STRICT, u'Обязательный')
+    )
     test = models.ForeignKey(Test)
     user = models.ForeignKey(User)
     start = models.DateTimeField(auto_now_add=True)
     complite = models.BooleanField(default=False, editable=False)
     result = models.FloatField(default=0)
+    mode = models.IntegerField(u'Режим', choices=MODE_CHOICES, default=SIMPLE, 
+                               help_text=u'Обязательный - вопрос не считаеться засчитаным, пока не будет получен верный ответ.')
+    random_answer_choices = models.BooleanField(u'Случайные варианты ответов', default=False)
     
     def __unicode__(self):
         return '%s' % self.test.__unicode__()
-
+    
+    def is_simple(self):
+        return self.mode == self.SIMPLE
+    
+    def is_strict(self):
+        return self.mode == self.STRICT
+    
     @property
     def grade(self):
         for item in GRADES:
@@ -117,7 +142,6 @@ class TestPass(models.Model):
                 return item[1]
             grade = item
         return grade[1]
-            
 
     @models.permalink
     def get_absolute_url(self):
@@ -171,6 +195,10 @@ class TestPass(models.Model):
 class AnswerChoice(models.Model):
     question = models.ForeignKey(Question)
     test_pass = models.ForeignKey(TestPass)
+    
+    def missed_correct(self):
+        answers_pks = [item.answer_id for item in self.answers.all()]
+        return self.question.answer_set.filter(correct=True).exclude(pk__in=answers_pks)
     
     @property
     def correct(self):
