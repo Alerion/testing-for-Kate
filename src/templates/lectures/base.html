@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% load main_tags %}
+
+{% block head %}Главная{% endblock %}
+
+{% block bclass %}lectures{% endblock %}
+
+{% block leftside %}
+    {% lectures %}
+{% endblock %}    

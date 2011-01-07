@@ -1,0 +1,10 @@
+*.pyc
+*.mo
+*~
+/env
+/src/database.sqlite
+/src/database.db
+/src/settings_local.py
+.project
+.pydevproject
+.settings/*

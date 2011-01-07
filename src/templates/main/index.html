@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+{% for item in categories %}
+	<h1><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></h1>
+	<ul>
+	{% for test in item.test_set.all %}
+		<li><a href="{{ test.get_absolute_url }}">{{ test }}</a></li>
+	{% endfor %}
+	</ul>
+{% endfor %}
+{% endblock %}

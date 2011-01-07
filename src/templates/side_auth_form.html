@@ -1,0 +1,11 @@
+          <form action="{% url login %}" method="post">
+              {% csrf_token %}
+              <p>
+	              Имя пользователя
+	              <input type="text" name="username"/>
+	              Пароль
+	              <input type="password" name="password"/>
+	              <input type="Submit" value="Вход"/>
+	              <a href="{% url registration_register %}">Регистрация</a>
+              </p>
+          </form>

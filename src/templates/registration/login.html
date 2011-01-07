@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}Вход{% endblock %}
+
+{% block userinfo %}{% endblock %}
+
+{% block content %}
+<form method="post">
+{% csrf_token %}
+<table>
+    {{ form }}
+    <tr>
+        <th>&nbsp;</th>
+        <td><input type="Submit" value="Вход"/></td>
+    </tr>
+</table>
+</form>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'lectures/base.html' %}
+
+{% block content %}
+{% for item in categories %}
+	<h1><a href="{% url lectures:category item.pk %}">{{ item.name }}</a></h1>
+	<ul>
+	{% for lecture in item.lecture_set.all %}
+		<li><a href="{{ lecture.get_absolute_url }}">{{ lecture }}</a></li>
+	{% endfor %}
+	</ul>
+{% endfor %}
+{% endblock %}

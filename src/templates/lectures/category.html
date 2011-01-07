@@ -1,0 +1,12 @@
+{% extends 'lectures/base.html' %}
+
+{% block head %}{{ obj.name }}{% endblock %}
+
+{% block content %}
+	<h1>{{ obj.name }}</h1>
+	<ul>
+	{% for lecture in obj.lecture_set.all %}
+		<li><a href="{{ lecture.get_absolute_url }}">{{ lecture }}</a></li>
+	{% endfor %}
+	</ul>
+{% endblock %}

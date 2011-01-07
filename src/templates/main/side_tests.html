@@ -1,0 +1,6 @@
+<h1>Категории:</h1>
+<p>	{% for item in items %}
+	    <a class="nav" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+	    <span class="hide"> | </span>
+	{% endfor %}
+</p>

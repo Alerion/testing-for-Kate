@@ -1,0 +1,8 @@
+{% extends 'statistic/base.html' %}
+
+{% block content %}
+	<h1>Результатов по дисциплинам</h1>
+	{% for item in items %}
+		<h3><a href="{% url statistic:discipline pk=item.pk %}">{{ item }}</a></h3>
+	{% endfor %}
+{% endblock %}

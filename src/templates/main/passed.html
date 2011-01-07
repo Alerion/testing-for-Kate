@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% load main_tags %}
+
+{% block head %}Результаты{% endblock %}
+
+{% block bclass %}main{% endblock %}
+
+{% block content %}
+	<h1>Все результаты</h1>
+	<table class="passed">
+		<thead>
+			<td>Тест</td>
+			<td>Процент верных</td>
+			<td>Баллы</td>
+		</thead>	
+	{% for item in items %}
+		<tr>
+			<td><a href="{% url main:result item.pk %}">{{ item.test }}</a></td>
+			<td>{{ item.result|percent }}</td>
+			<td>{{ item.grade }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endblock %}

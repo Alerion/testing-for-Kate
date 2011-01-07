@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+{% load main_tags %}
+<title>{% block title %}TestFull{% endblock %}</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}base.css" type="text/css" media="screen" />
+<script type='text/javascript' src='{{ MEDIA_URL }}js/jquery-1.3.2.min.js'></script>
+<script type='text/javascript' src='{{ MEDIA_URL }}js/jquery.template.js'></script>
+<script type='text/javascript' src='{{ MEDIA_URL }}js/updateTime.js'></script>
+{% block media %}{% endblock %}
+</head>
+<body class="{% block bclass %}{% endblock %}">
+<div id="container">
+  <div id="sitename">
+    <h1>TestFull</h1>
+    <h2>{% block head %}{% endblock %}</h2>
+  </div>
+  <div id="mainmenu">
+    <ul>
+      <li><a href="/" class="main">Главная</a></li>
+      <li><a href="{% url lectures:index %}" class="lectures">Лекции</a></li>
+      <li><a href="/about/">О проекте</a></li>
+      <li><a href="{% url statistic:index %}" class="statistic">Анализ результатов</a></li>      
+      {% if user.is_authenticated %}
+        <li><a href="{% url logout %}">Выход</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  <div id="wrap">
+    <div id="leftside">
+      {% block userinfo %}
+	      {% if user.is_anonymous %}
+	          {% include 'side_auth_form.html' %}
+	      {% else %}
+	      <p>
+	          Здраствуй, {{ user.full_name }}.<br/>
+	          <a href="{% url logout %}">Выход</a><br/>
+			  <a href='{% url main:passed %}'>Результаты</a><br/>
+			  {% if current_test %}
+			  <p class='side-test-info'>
+			  	  Вы начали проходить: 
+				  <a href="{{ current_test.get_absolute_url }}">{{ current_test }}</a><br/>
+				  Оталось: <span class="time">{{ current_test.left_time|timedelta }}</span>
+			  </p>
+			  {% endif %}
+	       </p>
+	      {% endif %}
+      {% endblock %}
+      {% block leftside %}
+      {% endblock %}
+    </div>
+    <div id="content">
+    {% block content %}{% endblock %}
+    </div>
+    <div class="clearingdiv">&nbsp;</div>
+  </div>
+</div>
+<div id="footer">&copy; 2005 Your Name | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></div>
+<script type='text/javascript'>
+	setInterval(updateTime, 1000);
+</script>
+</body>
+</html>

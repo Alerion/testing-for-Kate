@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+
+{% load main_tags %}
+
+{% block head %}Результаты{% endblock %}
+
+{% block content %}
+	<h1>{{ obj.test }}</h1>
+	<h3>Проходил: {{ obj.user.full_name }} {{ obj.user.group.name }}</h3>
+	<h3>Процент верных: {{ obj.result|percent}}</h3>
+	<h3>Оценка: {{ obj.grade }}</h3>
+	<h2>Ответы:</h2>
+	{% for item in obj.answerchoice_set.all %}
+		<p class='result'>
+			<span class='question'>{{ item.question }}<span/>
+			<span class='q-result'>{% if item.correct %}Верно{% else %}Неверно{% endif %}</span><br/>
+			{% for answer in item.answers.all %}
+				<span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+			{% endfor %}
+		</p>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'main/base.html' %}
+
+{% load pagination_tags %}
+
+{% block head %}{{ obj }}{% endblock %}
+
+{% block bclass %}main{% endblock %}
+
+{% block content %}
+    <h1><a href="{{ test.get_absolute_url }}">{{ test }}</a></h1>
+    <a href="{% url main:start test.pk %}" class="start-test">Начать тест</a>
+    {% paginate %}
+        {% for item in question_list %}
+            <div class="question-container">
+                <h3>{{ item }}</h3>
+                {% for answer in item.answer_set.all %}
+                    <p class='result'>
+                        <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+                    </p>
+                {% endfor %}                
+            </div>
+        {% endfor %}
+    {% paginate %}
+{% endblock %}

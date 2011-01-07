@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load main_tags %}
+
+{% block media %}
+<script type='text/javascript' src='{{ MEDIA_URL }}js/jscharts.js'></script>
+{% endblock %}
+
+{% block head %}Статистика{% endblock %}
+
+{% block bclass %}statistic{% endblock %}
+
+{% block leftside %}
+    {% statistic %}
+{% endblock %}    

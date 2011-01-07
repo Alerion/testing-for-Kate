@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}Регистрация{% endblock %}
+
+{% block content %}
+<form method="post">
+<table>
+    {{ form }}
+    <tr>
+        <th>&nbsp;</th>
+        <td><input type="Submit" value="Создать"/></td>
+    </tr>
+</table>
+</form>
+{% endblock %}

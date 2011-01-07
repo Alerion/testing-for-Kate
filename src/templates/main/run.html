@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+{% block head %}{{ current_test }}{% endblock %}
+
+{% block bclass %}main{% endblock %}
+
+{% load main_tags %}
+
+{% block content %}
+	<h1>{{ current_test }}</h1>
+	<p class="left-time">Время: <span class="time">{{ current_test.left_time|timedelta }}</span></p>
+	<div id='question-div'>
+		{% include 'main/answer.html' %}
+	</div>
+	<input type='submit' value='Ответить' id='answer-button'>
+	<script type='text/javascript'>
+		$('#answer-button').click(function(){
+			var data = $('#question-form').serialize();
+			if (data){
+				$.post('{% url main:answer %}', data, function(response){
+					if (response == 'END'){
+						document.location = '{% url main:end %}';
+					}else{
+						$('#question-div').html(response);
+					}
+				}, 'html');
+			}
+			return false;
+		});
+	</script>
+{% endblock %}

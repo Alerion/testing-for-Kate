@@ -1,0 +1,8 @@
+{% extends 'main/base.html' %}
+
+{% block bclass %}main{% endblock %}
+
+{% block content %}
+	<h1>Вы уже начали другой тест.</h1>
+	<a href="{{ current_test.get_absolute_url }}">{{ current_test }}</a>
+{% endblock %}

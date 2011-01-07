@@ -1,0 +1,26 @@
+{% extends 'statistic/base.html' %}
+
+{% block content %}
+	<h1>{{ obj }}</h1>
+	Всего пройден: {{ count }} раз.
+	<h3>Диаграма результатов</h3>
+	<div id="chartcontainer">&nbsp;</div>
+	<script type="text/javascript">
+		var myData = {{ data|safe }};
+		var myChart = new JSChart('chartcontainer', 'pie');
+		myChart.setTitle('Диаграма результатов');
+		myChart.setDataArray(myData);
+		myChart.draw();
+	</script>
+	<h3>Гистограма результатов</h3>
+	<div id="chartcontainer_perc">&nbsp;</div>
+	<script type="text/javascript">
+		var myData = {{ perc_data|safe }};
+		var myChart = new JSChart('chartcontainer_perc', 'bar');
+		myChart.setDataArray(myData);
+		myChart.setAxisNameX('');
+		myChart.setAxisNameY('%');
+		myChart.setTitle('Гистограма результатов');
+		myChart.draw();
+	</script>	
+{% endblock %}

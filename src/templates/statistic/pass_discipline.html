@@ -1,0 +1,129 @@
+{% extends 'statistic/base.html' %}
+
+{% block content %}
+	<h3>Количества прошедших тест по лекциям</h3>
+	<div id="chartcontainer">&nbsp;</div>
+	<script type="text/javascript">
+		var myData = [["#1", 15], ["#2", 20], ["#3", 25], ["#4", 20], ["#5", 20]];
+		var myChart = new JSChart('chartcontainer', 'pie');
+		myChart.setDataArray(myData);
+		myChart.setTitle('');
+		myChart.draw();
+		
+	</script>
+	<h3>Гистограма успешности по лекциям</h3>
+	<div id="chartcontainer1">&nbsp;</div>
+	<table class="result">
+		<tr>
+			<td>№ лекции</td>
+			<td>% сдавших на 5</td>
+			<td>кол. вопросов в тесте</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>10</td>
+			<td>20</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>30</td>
+			<td>25</td>
+		</tr>
+		<tr>
+			<td>3</td>
+			<td>5</td>
+			<td>15</td>
+		</tr>
+		<tr>
+			<td>4</td>
+			<td>15</td>
+			<td>20</td>
+		</tr>
+		<tr>
+			<td>5</td>
+			<td>60</td>
+			<td>15</td>
+		</tr>										
+	</table>
+	<script type="text/javascript">
+		var myData = [["#1", 10], ["#2", 30], ["#3", 5], ["#4", 15], ["#5", 60]]; 
+		var myChart = new JSChart('chartcontainer1', 'bar');
+		myChart.setDataArray(myData);
+		myChart.setAxisNameX('');
+		myChart.setAxisNameY('%');
+		myChart.setTitle('');
+		myChart.draw();
+	</script>
+	<h3>Коэфициент решаемости заданий</h3>
+	<div id="chartcontainer2">&nbsp;</div>
+	<table class="result">
+		<tr>
+			<td>Коэфициент решаемости заданий</td>
+			<td>Количество заданий</td>
+			<td>Процент заданий</td>
+		</tr>
+		<tr>
+			<td>от 0,7 до 1</td>
+			<td>4</td>
+			<td>33</td>
+		</tr>
+		<tr>
+			<td>от 0,4 до 0,7</td>
+			<td>3</td>
+			<td>25</td>
+		</tr>
+		<tr>
+			<td>до 0,4</td>
+			<td>5</td>
+			<td>42</td>
+		</tr>									
+	</table>	
+	<script type="text/javascript">
+		var myData = [['1', 0.2], ['2', 0.4], ['3', 0.8], ['4', 0.5], ['5', 0.21], ['6', 0.79], ['7', 0.71], ['8', 0.34], ['9', 0.33], ['10', 0.4], ['11', 0.9], ['12', 0.1]]; 
+		var myChart = new JSChart('chartcontainer2', 'bar');
+		myChart.setDataArray(myData);
+		myChart.setAxisNameX('');
+		myChart.setAxisNameY('%');
+		myChart.setTitle('');
+		myChart.setBarColor('#B10000');
+		myChart.draw();
+	</script>	
+	<h3>Результаты тестирования студента</h3>
+	<div id="chartcontainer3">&nbsp;</div>
+	<table class="result">
+		<tr>
+			<td># лекции</td>
+			<td>Оценка</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>5</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>3</td>
+		</tr>
+		<tr>
+			<td>3</td>
+			<td>4</td>
+		</tr>
+		<tr>
+			<td>4</td>
+			<td>5</td>
+		</tr>
+		<tr>
+			<td>5</td>
+			<td>4</td>
+		</tr>													
+	</table>	
+	<script type="text/javascript">
+		var myData = [['1', 5], ['2', 3], ['3', 4], ['4', 5], ['5', 4]]; 
+		var myChart = new JSChart('chartcontainer3', 'bar');
+		myChart.setDataArray(myData);
+		myChart.setAxisNameX('#');
+		myChart.setAxisNameY('Grade');
+		myChart.setTitle('');
+		myChart.setBarColor('#00CC00');
+		myChart.draw();
+	</script>					
+{% endblock %}

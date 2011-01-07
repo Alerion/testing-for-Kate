@@ -1,0 +1,11 @@
+{% extends 'lectures/base.html' %}
+
+{% block head %}{{ obj.title }}{% endblock %}
+
+{% block content %}
+	<h1>{{ obj.title }}</h1>
+	<p style="padding: 5px; font-size: 1.1em; font-weight: bolder;">{{ obj.annotation }}</p>
+	<div>
+		{{ obj.content|linebreaks }}
+	</div>
+{% endblock %}

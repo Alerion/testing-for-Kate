@@ -1,0 +1,6 @@
+<h1>Категории:</h1>
+<p>	{% for item in items %}
+	    <a class="nav" href="{% url lectures:category item.pk %}">{{ item.name }}</a>
+	    <span class="hide"> | </span>
+	{% endfor %}
+</p>

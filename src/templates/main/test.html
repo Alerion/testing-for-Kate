@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+{% block head %}{{ obj }}{% endblock %}
+
+{% block bclass %}main{% endblock %}
+
+{% block content %}
+	<h1>{{ obj }}</h1>
+    <a href="{% url main:questions obj.pk %}">Список вопросов</a><br/>
+	<a href="{% url main:start pk=obj.pk %}" class="start-test">Начать тест</a>
+	{{ obj.description|linebreaks }}
+{% endblock %}
