@@ -78,22 +78,24 @@ def answer(request):
         return redirect('/') 
     if request.current_test.is_end():
         return HttpResponse('END')
-    form = AnswerTestForm(request.current_test.first_question, request.current_test, request.POST)
+    current_test = request.current_test
+    form = AnswerTestForm(current_test.first_question, current_test, request.POST)
     prev_answer = None
     if form.is_valid():
         answers = form.get_answer()
-        ac = AnswerChoice(question=request.current_test.first_question, test_pass=request.current_test)
+        ac = AnswerChoice(question=current_test.first_question, test_pass=current_test)
         ac.save()
         for item in answers:
             AnswerResult(question=ac, answer=item).save()
-        if not request.current_test.first_question:
+        if not current_test.first_question:
             return HttpResponse('END')
-        if request.current_test.is_simple():
+        if current_test.is_simple():
             prev_answer = ac
-        form = AnswerTestForm(request.current_test.first_question, request.current_test)        
+        form = AnswerTestForm(current_test.first_question, current_test)        
     return {
         'form': form,
-        'prev_answer': prev_answer
+        'prev_answer': prev_answer,
+        'question': current_test.first_question
     }
 
 @login_required

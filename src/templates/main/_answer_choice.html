@@ -1,6 +1,9 @@
         <p class='result'>
             <span class='question'>{{ item.question }}<span/>
             <span class='q-result'>{% if item.correct %}Верно{% else %}Неверно{% endif %}</span><br/>
+            {% if user.is_active and user.is_staff %}
+                <a href="{% url admin:main_question_change question.pk %}">Редактировать</a><br/>
+            {% endif %}   
             {% for answer in item.answers.all %}
                 <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
             {% endfor %}

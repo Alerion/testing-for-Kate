@@ -6,7 +6,10 @@
             </div>      
         {% endif %}
         <form method='post' id='question-form'>
-			{{ current_test.first_question.question }}<br/>
-			<span class='extra-question'>{{ current_test.first_question.extra }}</span>
+			{{ question }}<br/>
+			<span class='extra-question'>{{ question.extra }}</span><br/>
+            {% if user.is_active and user.is_staff %}
+                <a style="font-size: 0.9em" href="{% url admin:main_question_change question.pk %}">Редактировать</a>
+            {% endif %}            
 			<table>{{ form }}</table>
 		<form/>
