@@ -8,7 +8,7 @@
 
 {% block content %}
 	<h1>{{ current_test }}</h1>
-	<p class="left-time">Время: <span class="time">{{ current_test.left_time|timedelta }}</span></p>
+	{#<p class="left-time">Время: <span class="time">{{ current_test.left_time|timedelta }}</span></p>#}
 	<div id='question-div'>
 		{% include 'main/answer.html' %}
 	</div>

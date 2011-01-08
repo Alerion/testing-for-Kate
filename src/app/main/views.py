@@ -62,13 +62,15 @@ def start(request, pk):
 @login_required
 @render_to('main/run.html')
 def run(request):
-    if not request.current_test:
+    current_test = request.current_test
+    if not current_test:
         return redirect('/')   
-    if request.current_test.is_end():
+    if current_test.is_end():
         return redirect('main:end')
-    form = AnswerTestForm(request.current_test.first_question, request.current_test)
+    form = AnswerTestForm(current_test.first_question, current_test)
     return {
-        'form': form
+        'form': form,
+        'question': current_test.first_question
     }
 
 @login_required
