@@ -13,8 +13,11 @@
 		{% include 'main/answer.html' %}
 	</div>
 	<input type='submit' value='Ответить' id='answer-button'>
-    <a href="{% url main:end %}">Закончить</a>
+    <a class="finish-test" href="{% url main:end %}">Закончить</a>
 	<script type='text/javascript'>
+	    $('.finish-test').click(function(){
+            return confirm('Вы действительно хотите закончить тестирование?');
+        })
 		$('#answer-button').click(function(){
 			var data = $('#question-form').serialize();
 			if (data){

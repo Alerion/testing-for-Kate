@@ -11,6 +11,8 @@
 	<h3>Оценка: {{ obj.grade }}</h3>
 	<h2>Ответы:</h2>
 	{% for item in obj.answerchoice_set.all %}
-        {% include 'main/_answer_choice.html' %}
+        {% with item.question as question %}
+            {% include 'main/_answer_choice.html' %}
+        {% endwith %}
 	{% endfor %}
 {% endblock %}

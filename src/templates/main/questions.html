@@ -13,6 +13,9 @@
         {% for item in question_list %}
             <div class="question-container">
                 <h3>{{ item }}</h3>
+                {% if user.is_active and user.is_staff %}
+                    <a href="{% url admin:main_question_change item.pk %}">Редактировать</a><br/>
+                {% endif %}                  
                 {% for answer in item.answer_set.all %}
                     <p class='result'>
                         <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
