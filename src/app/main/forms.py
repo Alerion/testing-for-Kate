@@ -32,27 +32,38 @@ class TestAdminForm(forms.ModelForm):
             Question.objects.filter(test=test).delete()
             
             doc = opendocx(file)
-            questions = []
+            
+            questions_data = []
+            data = []
             for p in doc.xpath('/w:document/w:body/w:p', namespaces=nsprefixes):
+                if not bool(p.xpath('w:r/w:t', namespaces=nsprefixes)):
+                    if len(data):
+                        questions_data.append(data)
+                        data = []
+                else:
+                    data.append(p)
+            
+            if len(data):
+                questions_data.append(data)
+            
+            questions = []
+            for qs_data in questions_data:
                 data = {
                     'question': u'',
                     'answers': []
                 }
-                for r in p.xpath('w:r/w:t', namespaces=nsprefixes):
-                    text = r.text.strip()
-                    underline = bool(r.getparent().xpath('w:rPr/w:u', namespaces=nsprefixes))
-                    if text.startswith(u'►'):
-                        data['answers'].append({
-                            'text': text,
-                            'correct': underline
-                        })
-                    else:
-                        if not data['answers']:
-                            data['question'] += ' %s' % text
-                        else:
-                            data['answers'][-1]['text'] += ' %s' % text
-                            if underline:
-                                data['answers'][-1]['correct'] = True
+                
+                for r in qs_data[0].xpath('w:r/w:t', namespaces=nsprefixes):
+                    data['question'] += u'%s ' % r.text.strip()
+                
+                for p in qs_data[1:]:
+                    text = u''
+                    for r in p.xpath('w:r/w:t', namespaces=nsprefixes):
+                        text += u'%s ' % r.text.strip()  
+                    data['answers'].append({
+                        'text': text,
+                        'correct': bool(p.xpath('w:r/w:rPr/w:b', namespaces=nsprefixes))
+                    })                  
                             
                 if data['answers']:
                     questions.append(data)

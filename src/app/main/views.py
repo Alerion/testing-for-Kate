@@ -123,7 +123,6 @@ def passed(request):
 def result(request, pk):
     obj = get_object_or_404(TestPass, pk=pk, user=request.user)
     obj.count_result()
-    print obj.result
     return {
         'obj': obj
     }
