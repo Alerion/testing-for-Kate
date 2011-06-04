@@ -2,10 +2,8 @@
 from django import forms
 from models import Question, Test, Answer, AnswerResult, AnswerChoice, TestPass
 from django.utils.itercompat import is_iterable
-from django.conf import settings
-import os
 from lib.docx import opendocx, nsprefixes
-from lxml import etree
+from app.main.parser import parser
 
 class StartTest(forms.ModelForm):
     
@@ -31,42 +29,7 @@ class TestAdminForm(forms.ModelForm):
             Answer.objects.filter(question__test=test).delete()
             Question.objects.filter(test=test).delete()
             
-            doc = opendocx(file)
-            
-            questions_data = []
-            data = []
-            for p in doc.xpath('/w:document/w:body/w:p', namespaces=nsprefixes):
-                if not bool(p.xpath('w:r/w:t', namespaces=nsprefixes)):
-                    if len(data):
-                        questions_data.append(data)
-                        data = []
-                else:
-                    data.append(p)
-            
-            if len(data):
-                questions_data.append(data)
-            
-            questions = []
-            for qs_data in questions_data:
-                data = {
-                    'question': u'',
-                    'answers': []
-                }
-                
-                for r in qs_data[0].xpath('w:r/w:t', namespaces=nsprefixes):
-                    data['question'] += u'%s ' % r.text.strip()
-                
-                for p in qs_data[1:]:
-                    text = u''
-                    for r in p.xpath('w:r/w:t', namespaces=nsprefixes):
-                        text += u'%s ' % r.text.strip()  
-                    data['answers'].append({
-                        'text': text,
-                        'correct': bool(p.xpath('w:r/w:rPr/w:b', namespaces=nsprefixes))
-                    })                  
-                            
-                if data['answers']:
-                    questions.append(data)
+            questions = parser(file)
                         
             for question in questions:
                 q = Question(test=test, question=question['question'])

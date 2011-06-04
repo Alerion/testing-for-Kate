@@ -211,9 +211,6 @@ class AnswerChoice(models.Model):
                 incorrect += 1
         return correct >= self.question.correct_count() and not incorrect
     
-    def __unicode__(self):
-        return self.answer[:50]
-    
 class AnswerResult(models.Model):
     question = models.ForeignKey(AnswerChoice, related_name='answers')
     answer = models.ForeignKey(Answer)
