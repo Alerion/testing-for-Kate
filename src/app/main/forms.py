@@ -4,6 +4,7 @@ from models import Question, Test, Answer, AnswerResult, AnswerChoice, TestPass
 from django.utils.itercompat import is_iterable
 from lib.docx import opendocx, nsprefixes
 from app.main.parser import parser
+from copy import copy
 
 class StartTest(forms.ModelForm):
     
@@ -13,6 +14,8 @@ class StartTest(forms.ModelForm):
 
 class TestAdminForm(forms.ModelForm):
     file = forms.FileField(required=False)
+    questions_count = forms.IntegerField(required=False, help_text=u'Количество вопросов в тесте. Оставьте пустым если не хотите разбивать вопросы на несколько тестов', 
+                                   label=u'Кол.вопросов')
     
     class Meta:
         model = Test
@@ -20,8 +23,10 @@ class TestAdminForm(forms.ModelForm):
     def save(self, commit=True):
         test = super(TestAdminForm, self).save(False)
         file = self.cleaned_data['file']
-
+        questions_count = self.cleaned_data['questions_count']
+        
         if file:
+            test_name = test.name
             test.save()
             AnswerResult.objects.filter(answer__question__test=test).delete()
             AnswerChoice.objects.filter(question__test=test).delete()
@@ -30,15 +35,32 @@ class TestAdminForm(forms.ModelForm):
             Question.objects.filter(test=test).delete()
             
             questions = parser(file)
-                        
-            for question in questions:
-                q = Question(test=test, question=question['question'])
+            count = 0
+            cur_test = test
+            
+            for i, question in enumerate(questions):
+                count += 1
+                q = Question(test=cur_test, question=question['question'])
                 q.save()
                 for answer in question['answers']:
                     a = Answer(question=q)
                     a.answer = answer['text']
                     a.correct = answer['correct']
                     a.save()
+                
+                if questions_count and count >= questions_count:
+                    if (len(questions) - i) >= questions_count:
+                        cur_test.name = '%s [%s-%s]' % (test_name, i+1-count, i+1)
+                        cur_test.save()                           
+                        cur_test = copy(test)
+                        cur_test.pk = None
+                        cur_test.save()
+                    else:
+                        cur_test.name = '%s [%s-%s]' % (test_name, i+1-count, len(questions))
+                        cur_test.save()
+                                                      
+                    count = 0
+                
         return test
 
 class AnswerTestForm(forms.Form):
