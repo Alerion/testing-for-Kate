@@ -100,7 +100,6 @@ INSTALLED_APPS = (
     'app.main',
     'app.account',
     'registration',
-	'django_extensions',
     'pagination'
 )
 
