@@ -29,12 +29,11 @@ def parser(file):
 
     questions_data = []
     data = []
-    
+
     for p in doc.xpath('/w:document/w:body/w:p', namespaces=nsprefixes):
         t = p.xpath('w:r/w:t', namespaces=nsprefixes)
         if bool(t):
-            if len(t) == 1:
-                data.append(t[0].text)
+            data.append(u''.join([i.text for i in t]).replace(u'№', u'#').strip())
         else:
             len(data) and questions_data.append(data)
             data = []
@@ -45,13 +44,15 @@ def parser(file):
     questions = []
 
     for qs_data in questions_data:
+        if qs_data[0].startswith(u'№') or qs_data[0].startswith(u'#'):
+            qs_data = qs_data[1:]
+            
         data = {
             'question': qs_data[0],
             'answers': []
         }
         
         correct = []
-
         for i in qs_data[-1][1:]:
             correct.append(int(i))
 
