@@ -1,0 +1,28 @@
+<select style="opacity: 0.6" class="copy-question-select-{{ copy_question_id }}">
+    {% for test in copy_choices %}
+        <option value="{{ test.pk }}" {% if last_test_copy_to == test.pk %}selected{% endif %}>{{ test.name }}</option>
+    {% endfor %}
+</select>
+<a href="#" class="copy-question-button-{{ copy_question_id }}">Копировать</a>
+<script>
+    jQuery(function($){
+        var URL = '{% url main:copy %}';
+        var question_id = '{{ copy_question_id }}';
+        
+        $('.copy-question-button-{{ copy_question_id }}').click(function(){
+            var test_id = $('.copy-question-select-{{ copy_question_id }}').val();
+
+            $.post(URL, {
+                test: test_id,
+                question: question_id
+            }, function(r){
+                if (r.error){
+                    $.jGrowl.error(r.error);
+                }else{
+                    $.jGrowl('Копирование прошло успешно!');
+                };
+            }, 'json');
+            return false;
+        })
+    });
+</script>

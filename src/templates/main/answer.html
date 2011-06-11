@@ -1,15 +1,18 @@
-		{% if prev_answer %}
-            <div class="prev-answer">
-            {% with prev_answer as item %}
-                {% include 'main/_answer_choice.html' %}
-            {% endwith %}
-            </div>      
-        {% endif %}
-        <form method='post' id='question-form'>
-			{{ question }}<br/>
-			<span class='extra-question'>{{ question.extra }}</span><br/>
-            {% if user.is_active and user.is_staff %}
-                <a style="font-size: 0.9em" href="{% url admin:main_question_change question.pk %}">Редактировать</a>
-            {% endif %}            
-			<table>{{ form }}</table>
-		<form/>
+{% load main_tags %}
+
+{% if prev_answer %}
+    <div class="prev-answer">
+    {% with prev_answer as item %}
+        {% include 'main/_answer_choice.html' %}
+    {% endwith %}
+    </div>      
+{% endif %}
+<form method='post' id='question-form'>
+	{{ question }}<br/>
+	<span class='extra-question'>{{ question.extra }}</span><br/>
+    {% if user.is_active and user.is_staff %}
+        <a style="font-size: 0.9em" href="{% url admin:main_question_change question.pk %}">Редактировать</a>
+        | {% copy_question question %}
+    {% endif %}            
+	<table>{{ form }}</table>
+<form/>

@@ -9,6 +9,7 @@ urlpatterns = patterns('app.main.views',
     url(r'^run/$', 'run', name='run'),
     url(r'^end/$', 'end', name='end'),
     url(r'^answer/$', 'answer', name='answer'),
+    url(r'^copy/$', 'copy', name='copy'),
     url(r'^passed/$', 'passed', name='passed'),
     url(r'^result/(?P<pk>[\d]+)/$', 'result', name='result'),
 )

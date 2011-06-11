@@ -8,16 +8,16 @@ from django.utils import simplejson
 from django.utils.encoding import force_unicode
 from django.utils.functional import Promise
 
-def render_to(template, processor=None):
+def render_to(template):
     #if processor and not callable(processor):
     #    raise Exception('Processor is not callable.')
     def renderer(func):
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):
-                return render_to_response(output[1], output[0], RequestContext(request, processors=processor))
+                return render_to_response(output[1], output[0], RequestContext(request))
             elif isinstance(output, dict):
-                return render_to_response(template, output, RequestContext(request, processors=processor))
+                return render_to_response(template, output, RequestContext(request))
             return output
         return wrapper
     return renderer

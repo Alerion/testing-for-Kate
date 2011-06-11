@@ -1,24 +1,28 @@
-        <p class='result'>
-            <span class='question'>{{ item.question }}<span/>
-            <span class='q-result'>{% if item.correct %}Верно{% else %}Неверно{% endif %}</span><br/>
-            {% if user.is_active and user.is_staff %}
-                <a href="{% url admin:main_question_change question.pk %}">Редактировать</a><br/>
+{% load main_tags %}
+
+<p class='result'>
+    <span class='question'>{{ item.question }}<span/>
+    <span class='q-result'>{% if item.correct %}Верно{% else %}Неверно{% endif %}</span><br/>
+    {% if user.is_active and user.is_staff %}
+        <a href="{% url admin:main_question_change question.pk %}">Редактировать</a>
+        | {% copy_question item.question %}
+        <br/>
+    {% endif %}
+    
+    {% if item.question.text_answer %}
+        <span class='answer {% if item.correct %}correct{% else %}incorrect{% endif %}'>{{ item.text_answer }}<span/><br/>
+    {% else %}
+        {% for answer in item.answers.all %}
+            <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+        {% endfor %}
+        {% with item.missed_correct as missed_correct %}
+            {% if missed_correct %}
+                <p class="missed-correct">
+                    {% for answer in missed_correct %}
+                         <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+                    {% endfor %}
+                </p>
             {% endif %}
-            
-            {% if item.question.text_answer %}
-                <span class='answer {% if item.correct %}correct{% else %}incorrect{% endif %}'>{{ item.text_answer }}<span/><br/>
-            {% else %}
-                {% for answer in item.answers.all %}
-                    <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
-                {% endfor %}
-                {% with item.missed_correct as missed_correct %}
-                    {% if missed_correct %}
-                        <p class="missed-correct">
-                            {% for answer in missed_correct %}
-                                 <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
-                            {% endfor %}
-                        </p>
-                    {% endif %}
-                {% endwith %}
-            {% endif %}
-        </p>
+        {% endwith %}
+    {% endif %}
+</p>

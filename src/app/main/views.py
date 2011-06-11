@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from lib import render_to
+from lib import render_to, JSONResponse
 from django.shortcuts import redirect
-from app.main.models import Category, Test, TestPass, AnswerChoice, AnswerResult
+from app.main.models import Category, Test, TestPass, AnswerChoice, AnswerResult, Question
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from forms import AnswerTestForm, StartTest
 from django.http import HttpResponse
 from django.views.generic.list_detail import object_list 
+import datetime
+from copy import deepcopy
 
 @render_to('main/index.html')
 def index(request):
@@ -131,3 +133,36 @@ def result(request, pk):
     return {
         'obj': obj
     }
+
+@login_required    
+def copy(request):
+    user = request.user
+    if not user.is_active and user.is_superuser:
+        return JSONResponse({'error': 'У вас не хватает прав доступа'})
+    
+    try:
+        test = Test.objects.get(pk=request.POST.get('test'))
+    except (Test.DoesNotExist, TypeError, ValueError):
+        return JSONResponse({'error': 'Не могу скопировать в несуществуюущий тест'})
+    
+    try:
+        question = Question.objects.get(pk=request.POST.get('question'))
+    except (Question.DoesNotExist, TypeError, ValueError):
+        return JSONResponse({'error': 'Не могу скопировать несуществуюущий вопрос'})    
+    
+    new_question = deepcopy(question)
+    new_question.pk = None
+    new_question.test = test
+    new_question.save()
+    
+    for answer in question.answer_set.all():
+        new_answer = deepcopy(answer)
+        new_answer.pk = None
+        new_answer.question = new_question
+        new_answer.save()
+        
+    response = JSONResponse({})
+    max_age = 365*24*60*60
+    expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+    response.set_cookie('last_test_copy_to', test.pk, max_age=max_age, expires=expires)
+    return response
