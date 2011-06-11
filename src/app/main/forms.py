@@ -41,12 +41,16 @@ class TestAdminForm(forms.ModelForm):
             for i, question in enumerate(questions):
                 count += 1
                 q = Question(test=cur_test, question=question['question'])
-                q.save()
-                for answer in question['answers']:
-                    a = Answer(question=q)
-                    a.answer = answer['text']
-                    a.correct = answer['correct']
-                    a.save()
+                if question['text_answer']:
+                    q.text_answer = question['text_answer']
+                    q.save()
+                else:
+                    q.save()
+                    for answer in question['answers']:
+                        a = Answer(question=q)
+                        a.answer = answer['text']
+                        a.correct = answer['correct']
+                        a.save()
                 
                 if questions_count and count >= questions_count:
                     if (len(questions) - i) >= questions_count:
@@ -64,7 +68,8 @@ class TestAdminForm(forms.ModelForm):
         return test
 
 class AnswerTestForm(forms.Form):
-    answer = forms.ModelMultipleChoiceField(queryset=Question.objects.all(), label='')
+    answer = forms.ModelMultipleChoiceField(queryset=Question.objects.all(), label='', required=False)
+    text_answer = forms.CharField(required=False, label=u'Введите ответ')
     
     def __init__(self, question, test_pass, *args, **kwargs):
         self.question = question
@@ -82,6 +87,10 @@ class AnswerTestForm(forms.Form):
         super(AnswerTestForm, self).__init__(*args, **kwargs)
         
         self.fields['answer'].widget = forms.CheckboxSelectMultiple(choices=self.fields['answer'].widget.choices)
+        
+        if not question.text_answer:
+            self.fields['text_answer'].widget = forms.HiddenInput()
+            
         #if question.multi_answer():
         #    self.fields['answer'].widget = forms.CheckboxSelectMultiple(choices=self.fields['answer'].widget.choices)
         #else:
@@ -89,7 +98,11 @@ class AnswerTestForm(forms.Form):
     
     def clean(self):
         data = self.cleaned_data
-
+        
+        if not data['text_answer'] and not data['answer']:
+            #TODO: set error to one of field depending from self.question.text_answer
+            raise forms.ValidationError('Введите ответ')
+        
         if self.test_pass.is_strict() and 'answer' in self.cleaned_data and \
             not self.question.check_answers(self.get_answer()):
             raise forms.ValidationError(u'Не верный ответ, попробуйте снова.')
@@ -97,6 +110,9 @@ class AnswerTestForm(forms.Form):
         return data
     
     def get_answer(self):
+        if self.question.text_answer:
+            return unicode(self.cleaned_data['text_answer']).strip()
+        
         a = self.cleaned_data['answer']
         if not is_iterable(a):
             a = [a]

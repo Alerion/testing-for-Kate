@@ -15,12 +15,18 @@
                 <h3>{{ item }}</h3>
                 {% if user.is_active and user.is_staff %}
                     <a href="{% url admin:main_question_change item.pk %}">Редактировать</a><br/>
-                {% endif %}                  
-                {% for answer in item.answer_set.all %}
+                {% endif %}
+                {% if item.text_answer %}
                     <p class='result'>
-                        <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+                        <span class='answer correct' style="font-size: 1.1em">{{ item.text_answer }}<span/><br/>
                     </p>
-                {% endfor %}                
+                {% else %}
+                    {% for answer in item.answer_set.all %}
+                        <p class='result'>
+                            <span class='answer {% if answer.correct %}correct{% else %}incorrect{% endif %}'>{{ answer.answer }}<span/><br/>
+                        </p>
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endfor %}
     {% paginate %}

@@ -100,7 +100,8 @@ INSTALLED_APPS = (
     'app.main',
     'app.account',
     'registration',
-    'pagination'
+    'pagination',
+    'south'
 )
 
 LOGIN_REDIRECT_URL='/'

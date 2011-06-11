@@ -85,10 +85,15 @@ def answer(request):
     prev_answer = None
     if form.is_valid():
         answers = form.get_answer()
-        ac = AnswerChoice(question=current_test.first_question, test_pass=current_test)
+        question = current_test.first_question
+        ac = AnswerChoice(question=question, test_pass=current_test)
         ac.save()
-        for item in answers:
-            AnswerResult(question=ac, answer=item).save()
+        if question.text_answer:
+            ac.text_answer = answers
+            ac.save()
+        else:
+            for item in answers:
+                AnswerResult(question=ac, answer=item).save()
         if not current_test.first_question:
             return HttpResponse('END')
         if current_test.is_simple():

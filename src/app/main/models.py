@@ -4,9 +4,9 @@ from app.account.models import User
 from datetime import datetime, timedelta
 
 GRADES = (
-    (0.85, 5),
-    (0.65, 4),
-    (0.45, 3),
+    (0.9, 5),
+    (0.75, 4),
+    (0.5, 3),
     (0, 2),
 )
 
@@ -63,7 +63,7 @@ class Test(models.Model):
         verbose_name_plural = u'тесты'
     
     def __unicode__(self):
-        return '%s(%s)' % (self.name, self.get_difficulty_display())
+        return '%s(%s, %s)' % (self.name, self.category, self.get_difficulty_display())
  
     @models.permalink
     def get_absolute_url(self):
@@ -71,9 +71,10 @@ class Test(models.Model):
     
 class Question(models.Model):
     test = models.ForeignKey(Test, verbose_name=u'тест')
-    question = models.CharField(u'Вопрос', max_length=500)
+    question = models.CharField(u'Вопрос', max_length=1500)
     extra = models.CharField(u'Дополнительно', max_length=500, blank=True)
-
+    text_answer = models.CharField(u'Конкретный ответ', max_length=500, blank=True)
+    
     class Meta:
         verbose_name = u'вопрос'
         verbose_name_plural = u'вопросы'
@@ -88,6 +89,9 @@ class Question(models.Model):
         return self.answer_set.filter(correct=True).count()
     
     def check_answers(self, answers):
+        if self.text_answer:
+            return self.text_answer == answers
+        
         correct = 0
         incorrect = 0
         for item in answers:
@@ -195,6 +199,7 @@ class TestPass(models.Model):
 class AnswerChoice(models.Model):
     question = models.ForeignKey(Question)
     test_pass = models.ForeignKey(TestPass)
+    text_answer = models.CharField(max_length=500, blank=True)
     
     def missed_correct(self):
         answers_pks = [item.answer_id for item in self.answers.all()]
@@ -202,6 +207,9 @@ class AnswerChoice(models.Model):
     
     @property
     def correct(self):
+        if self.question.text_answer:
+            return self.question.text_answer == self.text_answer
+        
         correct = 0
         incorrect = 0
         for item in self.answers.all():

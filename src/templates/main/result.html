@@ -9,6 +9,7 @@
 	<h3>Проходил: {{ obj.user.full_name }} {{ obj.user.group.name }}</h3>
 	<h3>Процент верных: {{ obj.result|percent}}</h3>
 	<h3>Оценка: {{ obj.grade }}</h3>
+	<a href="{% url main:start pk=obj.test.pk %}" class="start-test">Начать заново</a>
 	<h2>Ответы:</h2>
 	{% for item in obj.answerchoice_set.all %}
         {% with item.question as question %}

@@ -1,18 +1,22 @@
 # -*- encoding: utf8 -*-
 from lib.docx import opendocx, nsprefixes
+import re
 from lxml.etree import tounicode
 import pprint
 """
 Parser get docx file and return list of questions.
 Question has this structure:
 {
-    'question': u'<Question>'
+    'question': u'<Question>',
+    'text_answer': u'<Answer>',
     'answers: [{
         'text': u'<Answer>',
         'correct': True/False
     },...]
 }
+If text_answer, asnwers choices are ignored
 """
+text_answer_re = re.compile(r'\(\*(.+)\*\)')
 
 def parser(file):
     """
@@ -23,6 +27,15 @@ def parser(file):
     +заохочувальні;
     -про помилування;
     -каральні.
+    
+    № 1249, 0, 18, 2, 4, 180
+    Підставте відповідні цифри у вказану формулу і впишіть лише результат: А + Б, 
+    де А - під незаконною винагородою у значному розмірі в злочині 
+    “Одержання незаконної винагороди працівником державного підприємства, установи чи організації” 
+    слід розуміти незаконну винагороду, яка в ________ і більше разів перевищує 
+    неоподатковуваний мінімум доходів громадян; Б – кількість форм вини, з якими 
+    вчинюються злочини проти авторитету органів державної влади, органів місцевого 
+    самоврядування та об’єднань громадян. (*3*)
     """
     doc = opendocx(file)
 
@@ -43,11 +56,14 @@ def parser(file):
     questions = []
 
     for qs_data in questions_data:
+        num = ''
         if qs_data[0].startswith(u'№') or qs_data[0].startswith(u'#'):
+            num = qs_data[0]
             qs_data = qs_data[1:]
   
         data = {
             'question': qs_data[0],
+            'text_answer': u'',
             'answers': []
         }
         
@@ -60,7 +76,16 @@ def parser(file):
         
         if data['answers']:
             questions.append(data)
-  
+        else:
+            r = text_answer_re.search(data['question'])
+            if r:
+                data['text_answer'] = r.groups()[0]
+                data['question'] = text_answer_re.sub('', data['question'])
+                questions.append(data)
+        
+        #Uncommen for debuging and checking all questions
+        #assert len(data['answers']) or data['text_answer'], 'Question: %s' % num
+    
     return questions
 
 def parser2(file):
