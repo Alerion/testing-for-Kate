@@ -150,6 +150,9 @@ def copy(request):
     except (Question.DoesNotExist, TypeError, ValueError):
         return JSONResponse({'error': 'Не могу скопировать несуществуюущий вопрос'})    
     
+    if Question.objects.filter(test=test, question=question.question).exists():
+        return JSONResponse({'error': 'Такой вопрос уже есть в тесте'})
+    
     new_question = deepcopy(question)
     new_question.pk = None
     new_question.test = test
