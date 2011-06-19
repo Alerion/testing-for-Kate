@@ -47,7 +47,7 @@ def pass_discipline(request):
         data[item.name] = 1  
     for item in results:
         data[item.test.name] += 1
-    output = [[str(key), value] for key, value in data.items()]
+    output = [[unicode(key), value] for key, value in data.items()]
     return {
         'data': dumps(output)
     }

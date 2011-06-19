@@ -11,7 +11,7 @@
 	{{ question }}<br/>
 	<span class='extra-question'>{{ question.extra }}</span><br/>
     {% if user.is_active and user.is_staff %}
-        <a style="font-size: 0.9em" href="{% url admin:main_question_change question.pk %}">Редактировать</a>
+        <a style="font-size: 0.9em" href="{% url admin:main_question_change question.pk %}" target="blank">Редактировать</a>
         | {% copy_question question %}
     {% endif %}            
 	<table>{{ form }}</table>

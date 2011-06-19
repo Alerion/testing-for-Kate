@@ -22,10 +22,13 @@
     <ul>
       <li><a href="/" class="main">Главная</a></li>
       <li><a href="{% url lectures:index %}" class="lectures">Лекции</a></li>
-      <li><a href="/about/">О проекте</a></li>
+      <li><a href="{% url help %}">Помощь</a></li>
       <li><a href="{% url statistic:index %}" class="statistic">Анализ результатов</a></li>      
       {% if user.is_authenticated %}
         <li><a href="{% url logout %}">Выход</a></li>
+        {% if user.is_staff %}
+            <li><a href="{% url admin:index %}">Админка</a></li>
+        {% endif %}
       {% endif %}
     </ul>
   </div>
