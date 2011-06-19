@@ -1,0 +1,11 @@
+Установка на Windows.
+
+1. Скачиваем и устанавливаем Python: http://www.python.org/ftp/python/2.6.6/python-2.6.6.msi
+При установке ничего не меняем, просто жмем далее, далее...
+Вот сдесь с картинками http://ithowto.ru/programming/python/11-kak-ustanovit-python-v-windows-xp.html
+
+2. Добавляем Python в PATH. 
+
+3. Скачиваем и распаковываем проект.
+
+4. Запускаем run.bat
