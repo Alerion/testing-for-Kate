@@ -17,7 +17,7 @@ admin.site.register(Category, CategoryAdmin)
 
 class TestAdmin(admin.ModelAdmin):
     form = TestAdminForm
-    list_display = ('name', 'difficulty', 'time')
+    list_display = ('name', 'category', 'difficulty', 'time')
     filter_fields = ('category',)
     search_fields = ('name',)
     

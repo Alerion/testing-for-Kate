@@ -20,6 +20,68 @@ text_answer_re = re.compile(r'\(\*(.+)\*\)')
 
 def parser(file):
     """
+    № 5
+    У якій відповіді правильно вказано, що є кримінально-процесуальною формою: 
+    передбачена законом система стадії кримінального процесу; 
+    передбачені законом засоби контролю за законністю та обґрунтованістю всіх процесуальних дій і рішень; 
+     # передбачений законом порядок провадження у кримінальній справі в цілому, порядок і послідовність виконання необхідних процесуальних дій та прийняття відповідних рішень; 
+    передбачені законом процесуальні засоби і способи викриття винних у вчиненні злочину осіб; 
+    зміст процесуальних дій і прийнятих рішень та їх форма.
+    
+    № 141, 0, 2, 1, 4, 60
+    Вкажіть рік прийняття Кримінально-процесуального кодексу України: (*1960*)    
+    """
+    doc = opendocx(file)
+
+    questions_data = []
+
+    for p in doc.xpath('/w:document/w:body/w:p', namespaces=nsprefixes):
+        t = p.xpath('w:r/w:t', namespaces=nsprefixes)
+        if len(t):
+            questions_data.append([i.text.strip() for i in t])
+       
+    questions = []
+
+    for qs_data in questions_data:
+        num = ''
+        if qs_data[0].startswith(u'№'):
+            assert len(qs_data[0]) == 1
+            num = qs_data[1]
+            qs_data = qs_data[2:]
+  
+        data = {
+            'question': qs_data[0],
+            'text_answer': u'',
+            'answers': []
+        }
+        
+        for answer in qs_data[1:]:
+            if answer.startswith('#'):
+                data['answers'].append({
+                    'text': answer[1:],
+                    'correct': True
+                })
+            else:
+                data['answers'].append({
+                    'text': answer,
+                    'correct': False
+                })
+                        
+        if data['answers']:
+            questions.append(data)
+        else:
+            r = text_answer_re.search(data['question'])
+            if r:
+                data['text_answer'] = r.groups()[0]
+                data['question'] = text_answer_re.sub('', data['question'])
+                questions.append(data)
+        
+        assert len(data['answers']) or data['text_answer'], 'Question: %s' % num
+        
+    return questions
+
+def parser3(file):
+    """
     № 9, 0, 1, 1, 1, 90
     Особлива частина кримінального права України включає в себе норми таких видів:
     -одноразові;
