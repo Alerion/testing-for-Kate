@@ -4,7 +4,8 @@
 При установке ничего не меняем, просто жмем далее, далее...
 Вот сдесь с картинками http://ithowto.ru/programming/python/11-kak-ustanovit-python-v-windows-xp.html
 
-2. Скачиваем и распаковываем проект: https://github.com/downloads/Alerion/testing-for-Kate/testing-for-Kate.zip
+2. Скачиваем и распаковываем проект: https://github.com/downloads/Alerion/testing-for-Kate/testing-for-Kate.zip 
+Путь к распакованому проекту должен состоять только из латинице! Например: D:/testing-for-Kate/
 
 3. В корне проекта находим lxml-2.3.win32-py2.6.exe и PIL-1.1.7.win32-py2.6.exe. Устанавливаем просто нажимаея далее, далее...
 
