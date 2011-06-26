@@ -1,7 +1,7 @@
 # -*- encoding: utf8 -*-
 from lib.docx import opendocx, nsprefixes
 import re
-from lxml.etree import tounicode
+from lxml.etree import tounicode, tostring
 import pprint
 """
 Parser get docx file and return list of questions.
@@ -17,8 +17,91 @@ Question has this structure:
 If text_answer, asnwers choices are ignored
 """
 text_answer_re = re.compile(r'\(\*(.+)\*\)')
+text_answer_re1 = re.compile(r'\((.+)\)')
 
 def parser(file):
+    """
+    № 001,0,1,3,1,30
+    Міжнародне право регулює відносини:
+    +    двосторонні та багатосторонні між державами;
+    -    між державами та транснаціональними компаніями;
+    -    між міжнародними неурядовими організаціями;
+    +    між державами та міжнародними міжурядовими організаціями;
+    +    між державами та державо подібними утвореннями;
+    -    між міжнародними організаціями і фізичними особами.
+    
+    №052,0,3,1,1,30
+    Міжнародне м’яке право складають:
+        -  матеріальні норми;
+        -  процесуальні норми;
+        -  регіональні норми;
+        +  рекомендаційні норми;
+        -  імперативні норми;
+        -  диспозитивні норми.
+    
+    №061,3,1,4,30
+    (34) Кількість членів, з яких складається Комісія міжнародного права? 
+    """
+    doc = opendocx(file)
+    #f = open('d:/workspace/testing-for-Kate/src/app/main/1.xml', 'w')
+    #f.write(tostring(doc))
+    questions_data = []
+    data = []
+    
+    for p in doc.xpath('/w:document/w:body/w:p', namespaces=nsprefixes):
+        t = p.xpath('w:r/w:t', namespaces=nsprefixes)
+        text = u''.join([i.text.strip() for i in t])
+
+        if text:
+            data.append(text)
+        else:
+            len(data) and questions_data.append(data)
+            data = []
+       
+    questions = []
+    
+    for qs_data in questions_data:
+        num = qs_data[1]
+        qs_data = qs_data[1:]
+        
+        assert len(qs_data), num
+        
+        data = {
+            'question': qs_data[0],
+            'text_answer': u'',
+            'answers': []
+        }
+        
+        for answer in qs_data[1:]:
+            if answer.startswith('+'):
+                data['answers'].append({
+                    'text': answer[1:].strip(),
+                    'correct': True
+                })
+            else:
+                if answer.startswith('-'):
+                    answer = answer[1:]
+                    
+                data['answers'].append({
+                    'text': answer.strip(),
+                    'correct': False
+                })
+                        
+        if data['answers']:
+            questions.append(data)
+        else:
+            r = text_answer_re1.search(data['question'])
+            assert r, num
+            
+            data['text_answer'] = r.groups()[0]
+            data['question'] = text_answer_re1.sub('', data['question'])
+            questions.append(data)
+        
+        assert len(data['answers']) or data['text_answer'], 'Question: %s' % num
+
+    return questions
+
+def parser4(file):
     """
     № 5
     У якій відповіді правильно вказано, що є кримінально-процесуальною формою: 
